@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  */
 public class Lesson3 {
   /* How many times to repeat the test.  5 seems to give reasonable results */
-  private static final int RUN_COUNT = 5;
+  private static final int RUN_COUNT = 1;
   
   /**
    * Used by the measure method to determine how long a Supplier takes to
@@ -71,21 +71,41 @@ public class Lesson3 {
     int[][] distances = new int[LIST_SIZE][LIST_SIZE];
     
     // YOUR CODE HERE
-    
+    //todo: check if right
+    Stream<Integer> iter1 = Stream.iterate(0, idx -> idx + 1).limit(LIST_SIZE);
+
+    if (parallel) {
+      iter1 = iter1.parallel();
+    }
+
+    iter1.forEach(i -> {
+      Stream<Integer> iter2 = Stream.iterate(0, idx -> idx + 1).limit(LIST_SIZE);
+      if (parallel) {
+        iter2 = iter2.parallel();
+      }
+      iter2.forEach(j -> {
+        distances[i][j] = Levenshtein.lev(wordList.get(i), wordList.get(j));
+      });
+    });
+
     return distances;
   }
   
   /**
    * Process a list of random strings and return a modified list
-   * 
+   *
    * @param wordList The subset of words whose distances to compute
    * @param parallel Whether to run in parallel
    * @return The list processed in whatever way you want
    */
   static List<String> processWords(List<String> wordList, boolean parallel) {
     // YOUR CODE HERE
-    
-    return null;
+    Stream<String> stream = wordList.stream();
+    if (parallel) {
+      stream = stream.parallel();
+    }
+    return stream.sorted().map(String::toUpperCase).filter(s -> s.startsWith("A"))
+            .distinct().collect(Collectors.toList());
   }
 
   /**
@@ -101,7 +121,7 @@ public class Lesson3 {
     measure("Sequential", () -> computeLevenshtein(wordList, false));
     measure("Parallel", () -> computeLevenshtein(wordList, true));
     
-//    measure("Sequential", () -> processWords(wordList, false));
-//    measure("Parallel", () -> processWords(wordList, true));
+    measure("Sequential", () -> processWords(wordList, false));
+    measure("Parallel", () -> processWords(wordList, true));
   }
 }
