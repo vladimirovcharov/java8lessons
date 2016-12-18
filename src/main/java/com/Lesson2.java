@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,6 +99,14 @@ public class Lesson2 {
               .limit(3)
               .collect(Collectors.joining("-"));
       System.out.println(result);
+
+      // var 2
+      Optional<String> result2 = list
+              .stream()
+              .skip(1)
+              .limit(3)
+              .reduce((s1, s2) -> (s1 + "-" + s2));
+      System.out.println(result2.get());
   }
 
   /**
